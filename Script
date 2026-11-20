@@ -70,7 +70,7 @@ CREATE TABLE Class (
   REFERENCES INSTRUCTOR(InstructorId)
   );
 
-## CLASSSESSION (SessionID PK, SessionDate, StartTime, EndTime, Capacity, ClassID FK -> CLASS, ClassroomID -> CLASSROM) <- ReOlational Schema
+## CLASSSESSION (SessionID PK, SessionDate, StartTime, EndTime, Capacity, ClassID FK -> CLASS, ClassroomID -> CLASSROOM) <- ReOlational Schema
 
 CREATE TABLE ClassSession (
   SessionID   NUMBER (12) PRIMARY KEY ,
@@ -86,6 +86,14 @@ CREATE TABLE ClassSession (
 	  REFERENCES "CLASS" ("CLASSID") ENABLE;
   ALTER TABLE "CLASSSESSION" ADD CONSTRAINT "FK_ID_CLASSROOM" FOREIGN KEY ("CLASSROOMID")
 	  REFERENCES "CLASSROOM" ("CLASSROOMID") ENABLE;
+
+## FIX RELATIONAL SCHEMA HERE
+## DISCIPLINE ( DisciplineID PK, DisciplineName, DisciplineID FK -> InstructorID) <- Relational Schema
+
+CREATE TABLE Discipline (
+	DisciplineID NUMBER(4 , 0) PRIMARY KEY , 
+	"DISCIPLINENAME" VARCHAR2 (30) ,
+   ) ;
 
 ## CLASSREGISTRATION (RegistrationID PK, RegistrationDate, RegistrationStatus, AttendanceStatus, MaxClassCapacity, MemberID FK -> MEMBER, SessionID FK -> CLASSSESSION) <- Relational Schema
 
@@ -125,23 +133,29 @@ CREATE TABLE EQUIPMENTASSIGNMENT (
 ## WAITLISTREGISTRATION (WaitlistRegistrationID PK, WaitlistRegistrationStatus, QueuePosition, RegistrationID -> CLASSREGISTRATION) <- Relational Schema
 
 CREATE TABLE WaitlistRegistration (
-WaitlistRegistrationID   NUMBER PRIMARY KEY,
-order_date   DATE,
-customer_id  NUMBER,
+WaitlistRegistrationID   NUMBER PRIMARY KEY , 
+RegistrationID  NUMBER ,
+QueuePosition NUMBER (2 , 0) ,
 CONSTRAINT fk_orders_customer FOREIGN KEY (customer_id)
 REFERENCES customer(customer_id)
 );
 
+ALTER TABLE "WAITLISTREGISTRATION" ADD CONSTRAINT "FK_WLR_REGISTRATIONID" FOREIGN KEY ("REGISTRATIONID")
+	  REFERENCES "WAITLISTREGISTRATION" ("WAITLISTREGISTRATIONID") ENABLE;
+
+## CHECK THIS ONE TOO
 ## INSTRUCTORABILITY (InstructorAbilityID PK, InstructorID FK -> INSTRUCTOR, DisciplineID FK -> DISCIPLINE) <- Relational Schema
 
 CREATE TABLE InstructorAbility (
   InstructorAbilityID NUMBER PRIMARY KEY,
   InstructorID  NUMBER (6) ,
   DisciplineID  NUMBER (4) ,
-  CONSTRAINT fk_id_instructor FOREIGN KEY (InstructorID)
-  REFERENCES INSTRUCTOR(InstructorID)
-  CONSTRAINT fk_id_discipline FOREIGN KEY (DisciplineID)
-  REFERENCES DISCIPLINE(DisciplineID)
+  DisciplineLevel VARCHAR (20) ,
   );
+
+ALTER TABLE "INSTRUCTORABILITY" ADD CONSTRAINT "FK_IA_DISCIPLINE" FOREIGN KEY ("DISCIPLINEID")
+	  REFERENCES "DISCIPLINE" ("DISCIPLINEID") ENABLE;
+  ALTER TABLE "INSTRUCTORABILITY" ADD CONSTRAINT "FK_IA_INSTRUCTOR" FOREIGN KEY ("INSTRUCTORID")
+	  REFERENCES "INSTRUCTOR" ("INSTRUCTORID") ENABLE;
 
 ## DATA INSERTION
